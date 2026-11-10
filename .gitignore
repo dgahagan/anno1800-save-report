@@ -1,0 +1,15 @@
+vendor/
+cache/
+reports/
+.venv/
+config.local.toml
+# one player's data: savegames hold the Ubisoft account id, notes are personal
+archive/
+notes/
+*.a7s
+tests/fixtures.local.toml
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/

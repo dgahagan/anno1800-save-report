@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anno-report"
+version = "0.1.0"
+description = "Turn Anno 1800 savegames into plain-text game-state reports"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = ["lxml>=5", "numpy>=1.26"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Repository = "https://github.com/dgahagan/anno1800-save-report"
+
+[project.scripts]
+anno-report = "anno_report.cli:main"
+
+[tool.setuptools]
+packages = ["anno_report"]

@@ -1,0 +1,25 @@
+# Copy to tests/fixtures.local.toml (gitignored) and list your own saves. See tests/conftest.py.
+# `path` is relative to $ANNO_TEST_SAVES (default: the workspace archive/), or absolute.
+# Every key except `path` is optional: a save with no pins still runs the invariant tests.
+
+[[save]]
+path = "My Company/2026-01-01_1200_Autosave 1.a7s"
+has = ["ships", "routes", "route_ledger"]      # the save must show these; without the flag an empty result skips
+# values read off the game screens when the save was made
+money = 12345
+population = 3456
+changelist = 1412158
+company = "My Company"
+ais = ["Princess Qing", "Willie Wibblesock"]
+
+[save.unclaimed_islands]       # session guid -> unclaimed islands with fertilities (180025 = The New World)
+180025 = 12
+
+[save.islands."My Island"]
+fertilities = ["Potato", "Grain"]
+workforce_tiers = [15000000, 15000001, 15000002]
+
+[save.islands."My Island".population]      # tier guid -> residents (15000000 = Farmers)
+15000000 = 1700
+15000001 = 1200
+15000002 = 400
