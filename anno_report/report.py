@@ -222,7 +222,7 @@ def render_markdown(save: Save, trend_rows: list[dict] | None = None) -> str:
             L.append("- Workforce: " + ", ".join(f"{n(t)} {w['available']}/{w['demand']} needed" for t, w in wf.items()))
         h = isl.happiness
         if h:
-            L.append(f"- Happiness {h.get('avgHappiness', 0):.0f} · attractiveness {h.get('attractiveness')} · pollution {h.get('pollution', 0):.1f}")
+            L.append(f"- Happiness {h.get('avgHappiness') or 0:.0f} · attractiveness {h.get('attractiveness')} · pollution {h.get('pollution') or 0:.1f}")
         L.append(f"- Fertilities: {', '.join(n(x).replace(' Fertility', '') for x in isl.fertilities) or 'none'}")
         L.append(f"- Deposits: {', '.join(f'{n(g)} x{c}' for g, c in isl.slots.most_common()) or 'none'}")
         needs = island_needs(save, isl)
