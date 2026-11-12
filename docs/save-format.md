@@ -40,7 +40,7 @@ The same-looking field can be decimal in one place and raw hex in another. This 
 - **Statistics history:** `EconomyStatisticManager/History/areaHistory`, keyed by u16 area id in hex. 12 snapshots, one per 10 minutes, with stock, generation and consumption per product. The statistics screen's production tab is tonnes per minute, current/max (verified on three building types).
 - **Warning icons:** `Infolayer/Icons/GUID` on each object: Full Output Storage, Missing Goods, No Warehouse in Range, Fire! and others. "Awaiting promotion" sits on every house and is status, not a warning.
 - **Incidents:** active ones are in the session `IncidentManager/Incidents`, joined by id to the island's `AreaIncidentManager/incidentTypeData/<type>/Incidents`. Risk is `AreaInfectionChance` per type. Type 0 = fire is confirmed by the icon. Types 1, 2, 5, 6 are inferred.
-- **Mood:** `AreaHappinessManager/HappinessData/workingConditions` per tier; `AreaFestivalManager` for a running festival.
+- **Mood:** `AreaHappinessManager/HappinessData/workingConditions` per tier; `AreaFestivalManager` for a running festival. A negative tier value matched one building of that tier at `Productivity` 1.5: the player had raised its per-building working-conditions slider (in-game text: "Your people dislike working overtime."). Not yet checked how the value scales with the number of such buildings.
 - **Productivity:** the report uses `ProductionState/Productivity`. `CurrentProductivity` also exists. It is unclear which one the UI shows.
 
 ## Harbour trade
