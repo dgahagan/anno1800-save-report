@@ -1,0 +1,15 @@
+name: Feature request
+description: A new report section, a DLC system, or a better estimate.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: want
+    attributes:
+      label: What should the report show?
+      description: Say which game screen shows it today, if any. That helps to find it in the save.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Which decision would it help with?

@@ -1,10 +1,49 @@
-# anno1800-save-report
+<h1 align="center">anno1800-save-report</h1>
 
-`anno-report` reads an Anno 1800 savegame and writes a plain-text report of the game state: treasury, population, problems, every island, trade routes, ships and diplomacy.
+<p align="center">
+  <b>Turn an Anno 1800 savegame into a plain-text report of your whole game.</b><br>
+  An AI assistant reads the report and gives advice, so you do not have to send screenshots.
+</p>
 
-The report is made for an AI assistant such as Claude Code. The assistant reads the report and gives advice, so you do not have to send screenshots. The report is also readable on its own.
+<p align="center">
+  <a href="https://github.com/dgahagan/anno1800-save-report/actions/workflows/ci.yml"><img alt="tests" src="https://github.com/dgahagan/anno1800-save-report/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="licence: MIT" src="https://img.shields.io/badge/licence-MIT-blue.svg"></a>
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-3776ab.svg">
+  <img alt="Linux · Steam + Proton" src="https://img.shields.io/badge/platform-Linux%20%C2%B7%20Steam%20%2B%20Proton-555.svg">
+  <img alt="read-only" src="https://img.shields.io/badge/game%20files-read--only-2ea44f.svg">
+</p>
 
-Not affiliated with Ubisoft. The tool only reads savegames. It never writes to the game's folders.
+<p align="center">
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#what-you-get">What you get</a> ·
+  <a href="#use-with-claude-code">Use with Claude Code</a> ·
+  <a href="#known-limits">Known limits</a> ·
+  <a href="#how-it-works">How it works</a>
+</p>
+
+---
+
+`anno-report` decodes the newest save and writes the game state as Markdown and JSON: treasury, population, problems, every island, trade routes, ships and diplomacy. The report is made for an AI assistant such as [Claude Code](https://claude.com/claude-code), and it is also readable on its own.
+
+- **Problems first.** Idle factories, game warning icons, unmet needs and goods that will run out soon come at the top.
+- **Every island.** Population, workforce balance, needs, production, stock and stock trends for each island you own.
+- **Settling help.** Fertilities, deposits and distances for every island in every session, including unclaimed ones.
+- **History.** Each run archives saves it has not seen, so you can diff against the previous save or build a trend table, even after the game rotates its autosaves away.
+- **Safe.** It only reads your saves and game install. It never writes to the game's folders.
+
+Not affiliated with Ubisoft.
+
+## Quick start
+
+```bash
+git clone https://github.com/dgahagan/anno1800-save-report.git
+cd anno1800-save-report
+scripts/setup_tools.sh                                       # builds the two decoders into vendor/
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+./anno-report                                                # reports the newest save → reports/latest.md
+```
+
+Read [Requirements](#requirements) and [Setup](#setup) for the details.
 
 ## Status
 
@@ -54,7 +93,15 @@ Saved 2026-11-01 01:10 · game time 4h41m · build 1412158 · decode 42s · sha 
 - Python 3.11 or newer
 - .NET SDK (any current version; the setup script retargets the tools to it)
 - git
-- Disk space: about 300 MB for the tools, about 300 MB for the extracted game data, and about 180 MB for each decoded save in `cache/`
+- Disk space:
+
+  | what | where | size |
+  |---|---|---|
+  | built decoders | `vendor/` | about 260 MB |
+  | Python venv | `.venv/` | about 110 MB |
+  | extracted game data | `cache/gamedata/` | about 300 MB |
+  | each decoded save | `cache/<sha1>/` | about 180 MB; trim with `--prune-cache N` |
+  | archived saves | `archive/<profile>/` | about 1.5–2 MB per save |
 
 ## Setup
 
@@ -63,10 +110,10 @@ git clone https://github.com/dgahagan/anno1800-save-report.git
 cd anno1800-save-report
 scripts/setup_tools.sh                                   # clones and builds the two decoders into vendor/
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
-./anno-report                                            # newest save; about 1 min, then about 1 s when cached
+./anno-report                                            # newest save; about 1 min, then a few seconds when cached
 ```
 
-The first run also extracts the game's asset list, which takes a little longer.
+The first run takes about 2–3 minutes. It extracts the game's asset list once. It also copies every save of the profile into `archive/` (128 saves came to 191 MB in one test). Use `--no-archive` to skip that.
 
 ## Use
 
@@ -112,6 +159,27 @@ cp -r notes.example notes     # then fill in notes/player.md: your experience, w
 
 Then open Claude Code in this folder (or in your `ANNO_REPORT_HOME` folder with a copy of `CLAUDE.md`), save the game, and ask your question.
 
+A typical session:
+
+```text
+you    › I just saved. Why is my income dropping?
+claude   runs ./anno-report, reads reports/latest.md and reports/diff.md
+claude › Your balance fell by about 600/min since the last save. Two causes:
+         1. Northaven: 2 Coal Mines run at 8% because the Furnaces have no warehouse in range.
+         2. Artisans get no Fur Coats (37 houses), so they pay less tax.
+         Fix the warehouse first. It also unblocks Steel.
+claude   updates notes/game-state.md and adds the decision to notes/journal.md
+```
+
+The notes in `notes/` carry your game from one session to the next:
+
+| file | holds |
+|---|---|
+| `player.md` | your experience, which DLC you own, how you want advice |
+| `game-state.md` | a summary of the current game, rewritten after each session |
+| `journal.md` | dated decisions |
+| `todo.md` | the in-game checklist |
+
 ## Privacy
 
 A savegame contains your Ubisoft account id and your company name. Do not attach `.a7s` files or decoded XML to a public issue. The `.gitignore` here keeps saves, notes and reports out of git.
@@ -125,11 +193,23 @@ A savegame contains your Ubisoft account id and your company name. Do not attach
 - Diplomacy states 2 (trade rights) and 3 (alliance) are guesses. So are the incident types other than fire.
 - A game patch can change the save format.
 
-`docs/save-format.md` records what is known about the format and what is still open.
+[`docs/save-format.md`](docs/save-format.md) records what is known about the format and what is still open.
 
 ## How it works
 
-`.a7s` → RdaConsole (RDA container) → zlib → FileDBReader with the `a7s_all.xml` rule file → XML → `anno_report/save.py` → `anno_report/report.py`.
+```mermaid
+flowchart LR
+    A[".a7s savegame"] -->|copied into cache/| B["RdaConsole<br/>unpacks the RDA container"]
+    B -->|zlib| C["FileDBReader<br/>+ a7s_all.xml rules"]
+    C --> D["XML"]
+    D --> E["save.py<br/>object model"]
+    G["assets.xml + texts<br/>from your game install"] --> F
+    E --> F["report.py"]
+    F --> R1["latest.md"]
+    F --> R2["islands.md"]
+    F --> R3["latest.json"]
+    F --> R4["diff.md"]
+```
 
 Names, needs, upkeep and population tiers come from `assets.xml` and `texts_english.xml`, extracted once from the highest-numbered `maindata/data*.rda` of your own game install. No game data ships with this repo.
 
@@ -153,6 +233,10 @@ Names, needs, upkeep and population tiers come from `assets.xml` and `texts_engl
 
 The two anno-mods tools declare no licence. That is why this project builds them from source at setup and does not redistribute them.
 
+## Contributing
+
+Checks against the game, DLC saves and decoded fields are the most useful help. Read [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Licence
 
-MIT. See `LICENSE`. Anno 1800 is a trademark of Ubisoft Entertainment.
+MIT. See [LICENSE](LICENSE). Anno 1800 is a trademark of Ubisoft Entertainment.

@@ -11,6 +11,16 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = ["lxml>=5", "numpy>=1.26"]
+keywords = ["anno-1800", "savegame", "game-state", "report", "claude-code"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Games/Entertainment :: Simulation",
+]
 
 [project.optional-dependencies]
 dev = ["pytest"]

@@ -34,7 +34,7 @@ grep -q SYSLIB0011 "$SRC/FileDBReader/FileDBSerializer/FileDBSerializer/AnnoMods
   sed -i 's#<Nullable>enable</Nullable>#<Nullable>enable</Nullable>\n    <NoWarn>$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>#' \
   "$SRC/FileDBReader/FileDBSerializer/FileDBSerializer/AnnoMods.BBDom.csproj"
 
-dotnet publish "$SRC/RdaConsole/RdaConsole/RdaConsole.csproj" -c Release -o "$BIN/RdaConsole" -nologo -v q
-dotnet publish "$SRC/FileDBReader/FileDBReader.csproj" -c Release -o "$BIN/FileDBReader" -nologo -v q
+dotnet publish "$SRC/RdaConsole/RdaConsole/RdaConsole.csproj" -c Release -o "$BIN/RdaConsole" -nologo -v q -clp:ErrorsOnly   # third-party warnings hidden; errors still print
+dotnet publish "$SRC/FileDBReader/FileDBReader.csproj" -c Release -o "$BIN/FileDBReader" -nologo -v q -clp:ErrorsOnly   # third-party warnings hidden; errors still print
 "$BIN/RdaConsole/RdaConsole" --version && "$BIN/FileDBReader/FileDBReader" --version
 echo "tools built in $BIN"
